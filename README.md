@@ -10,6 +10,12 @@ and configurate tailwind:
 npx tailwindcss init -p
 ```
 
+install axios
+
+```
+npm i axios
+```
+
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
