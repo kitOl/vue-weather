@@ -1,5 +1,7 @@
 # vue-weather
 
+Created by video playlist [there](https://www.youtube.com/playlist?list=PL4cUxeGkcC9hfoy8vFQ5tbXO3vY0xhhUZ)
+
 ```
 npm i -D tailwindcss postcss autoprefixer
 ```
@@ -14,6 +16,10 @@ install axios
 
 ```
 npm i axios
+```
+
+```
+npm i uid
 ```
 
 ## Recommended IDE Setup
