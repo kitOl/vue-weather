@@ -13,7 +13,7 @@
         v-if="mapboxSearchResults"
       >
         <p v-if="searchError">Sorry, something went wrong, please try again</p>
-        <p v-if="!searchError && mapboxSearchResults.lenght === 0">
+        <p v-if="!searchError && mapboxSearchResults.length === 0">
           No results match your query, try a different term.
         </p>
         <template v-else>
@@ -28,11 +28,12 @@
         </template>
       </ul>
     </div>
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4 pb-12">
       <Suspense>
         <CityList />
         <template #fallback>
           <CityCardSkeleton />
+          <!-- <p>Loading...</p> -->
         </template>
       </Suspense>
     </div>
@@ -50,20 +51,20 @@ const router = useRouter();
 const previewCity = (searchResult) => {
   console.log(searchResult);
   const [city, state] = searchResult.place_name.split(',');
-  console.log(city, state);
+  // console.log(city, state);
   router.push({
     name: 'cityView',
-    params: { state: state.replaceAll(' ', ''), city },
+    params: { state: state.replaceAll(' ', ''), city: city },
     query: {
-      lat: searchResult.geomenty.coordinates[1],
-      lng: searchResult.geomenty.coordinates[0],
+      lat: searchResult.geometry.coordinates[1],
+      lng: searchResult.geometry.coordinates[0],
       preview: true,
     },
   });
 };
 
 const mapboxAPIKey =
-  'pk.eyJ1Ijoiam9obmtvbWFybmlja2kiLCJhIjoiY2t5NjFz0DZvMHJkaDJ1bWx60GVieGxreSJ9.IpojdT3U3NENknF6_WhR2Q';
+  'pk.eyJ1Ijoiam9obmtvbWFybmlja2kiLCJhIjoiY2t5NjFzODZvMHJkaDJ1bWx6OGVieGxreSJ9.IpojdT3U3NENknF6_WhR2Q';
 const searchQuery = ref('');
 const queryTimeout = ref(null);
 const mapboxSearchResults = ref(null);
@@ -72,17 +73,14 @@ const searchError = ref(null);
 const getSearchResults = () => {
   clearTimeout(queryTimeout.value);
   queryTimeout.value = setTimeout(async () => {
-    console.log(searchQuery.value);
+    // console.log(searchQuery.value);
     if (searchQuery.value !== '') {
       try {
         const res = await axios.get(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${searchQuery.value}.json?access_token=${mapboxAPIKey}&types=place`
         );
         mapboxSearchResults.value = res.data.features;
-        console.log(
-          mapboxSearchResults.value,
-          '/' + mapboxSearchResults.length
-        );
+        // console.log(mapboxSearchResults.value, ' | ');
       } catch {
         searchError.value = true;
       }

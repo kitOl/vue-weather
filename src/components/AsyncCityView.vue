@@ -19,25 +19,24 @@
             month: 'long',
           })
         }}
+        -
         {{
-          new Date(weatherData.currentTime).toLocaleDateString('en-us', {
+          new Date(weatherData.currentTime).toLocaleTimeString('en-us', {
             timeStyle: 'short',
           })
         }}
       </p>
-      <p class="text-8xl mb-8">
-        {{ Math.round(weatherData.current.temp) }}&deg;
-      </p>
+      <p class="text-8xl mb-8">{{ Math.round(weatherData.main.temp) }}&deg;</p>
       <p>
         Feels like
-        {{ Math.round(weatherData.current.feels_like) }}&deg;
+        {{ Math.round(weatherData.main.feels_like) }}&deg;
       </p>
       <p class="capitalize">
-        {{ weatherData.current.weather[0].description }}
+        {{ weatherData.weather[0].description }}
       </p>
       <img
         class="w-[150px] h-auto"
-        :src="`http://openweathermap.org/img/wn/${weatherData.current.weather[0].icon}@2x.png`"
+        :src="`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`"
         alt=""
       />
     </div>
@@ -56,7 +55,7 @@
           >
             <p class="whitespace-nowrap text-md">
               {{
-                new Date(hourData.currentTime).toLocaleDateString('en-us', {
+                new Date(hourData.currentTime).toLocaleTimeString('en-us', {
                   hour: 'numeric',
                 })
               }}
@@ -119,24 +118,31 @@ import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute();
 const getWeatherData = async () => {
+  const API_ID = '4287cc7115a052235732bd5fc8516206';
+  // const weatherUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${route.query.lat}&lon=${route.query.lng}&appid=${API_ID}&units=imperial`;
+  // const weatherUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${route.query.lat}&lon=${route.query.lng}&appid=${API_ID}&units=imperial`;
+  const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${route.query.lat}&lon=${route.query.lng}&appid=${API_ID}&units=metric`;
+
+  // const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=London,uk&appid=${API_ID}&units=imperial`;
   try {
-    const weatherData = await axios.get(
-      `https://api.openweathermap.org/data/2.5/onecall?lat=${route.query.lat}&lon=${route.query.lng}&exclude={part}&appid=${API_KEY}&units=imperial`
-    );
+    const weatherData = await axios.get(weatherUrl);
 
     // current date & time calculate
-    const localOffset = new Data().getTimezoneOffset() * 60000;
-    const utc = weatherData.data.current.dt * 1000 + localOffset;
-    weatherData.data.currentTime =
-      utc + 1000 * weatherData.data.timezone_offset;
+    const localOffset = new Date().getTimezoneOffset() * 60000;
+    const utc = weatherData.data.dt * 1000 + localOffset;
+    // const utc = weatherData.data.current.dt * 1000 + localOffset;
+    weatherData.data.currentTime = utc + 1000 * weatherData.data.timezone;
+    // weatherData.data.currentTime =
+    //   utc + 1000 * weatherData.data.timezone_offset;
+    console.log('current Time', weatherData.data.currentTime);
 
     // hourly weather offset
-    weatherData.data.hourly.forEach((hour) => {
-      const utc = hour.dt * 1000 + localOffset;
-      hour.currentTime = utc + 1000 * weatherData.data.timezone_offset;
-    });
+    // weatherData.data.hourly.forEach((hour) => {
+    //   const utc = hour.dt * 1000 + localOffset;
+    //   hour.currentTime = utc + 1000 * weatherData.data.timezone_offset;
+    // });
 
-    await new Promise((res) => setTimeout(res, 1000));
+    await new Promise((res) => setTimeout(res, 200));
 
     return weatherData.data;
   } catch (err) {
@@ -144,7 +150,37 @@ const getWeatherData = async () => {
   }
 };
 
+const getForecastData = async () => {
+  const API_ID = '4287cc7115a052235732bd5fc8516206';
+
+  const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${route.query.lat}&lon=${route.query.lng}&appid=${API_ID}&units=metric`;
+
+  try {
+    const forecastData = await axios.get(forecastUrl);
+
+    // hourly weather offset
+    // weatherData.data.hourly.forEach((hour) => {
+    //   const utc = hour.dt * 1000 + localOffset;
+    //   hour.currentTime = utc + 1000 * weatherData.data.timezone_offset;
+    // });
+
+    // 3-hourly weather offset
+    // forecastData.data.list.forEach((threeHour) => {
+    //   const utc = threeHour.dt * 1000 + localOffset;
+    //   threeHour.currentTime = utc + 1000 * weatherData.data.timezone;
+    // });
+
+    await new Promise((res) => setTimeout(res, 200));
+
+    return forecastData.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const weatherData = await getWeatherData();
+const forecastData = await getForecastData();
+// console.log(weatherData);
 
 const router = useRouter();
 const removeCity = () => {

@@ -3,6 +3,7 @@
     <Suspense>
       <AsyncCityView />
       <template #fallback>
+        <!-- <p>Loading...</p> -->
         <CityViewSkeleton />
       </template>
     </Suspense>

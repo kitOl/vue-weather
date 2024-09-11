@@ -20,18 +20,16 @@ const getCities = async () => {
     savedCities.value = JSON.parse(localStorage.getItem('savedCities'));
 
     const requests = [];
-    const APPID = '7efa332cf48aeb9d2d391a51027f1a71';
+    const APPID = '4287cc7115a052235732bd5fc8516206';
+    // console.log('savedCities', savedCities.value);
     savedCities.value.forEach((city) => {
-      requests.push(
-        axios.get(
-          `https://api.openweathermap.org/data/2.5/weather?lat=${city.coords.lat}&lon=${city.coords.lng}&appid=${APPID}&units=imperial`
-        )
-      );
+      let url = `https://api.openweathermap.org/data/2.5/weather?lat=${city.coords.lat}&lon=${city.coords.lng}&appid=${APPID}&units=metric`;
+      requests.push(axios.get(url));
     });
 
     const weatherData = await Promise.all(requests);
 
-    await new Promise((res) => setTimeout(res, 1000));
+    await new Promise((res) => setTimeout(res, 300));
 
     weatherData.forEach((value, index) => {
       savedCities.value[index].weather = value.data;
